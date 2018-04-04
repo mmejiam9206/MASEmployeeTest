@@ -1,0 +1,81 @@
+﻿
+    <h1>Employee Details</h1>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <table id="employee-details-table" width="700">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Name</th>
+                            <th>Role Name</th>
+                            <th>Role Description</th>
+                            <th>Contract Type</th>
+                            <th>Annual Salary</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="col-md-4">
+                <form id="employee-details-form">
+                    <div class="form-group">
+                        <input type="text" id="employee-id" placeholder="User Id"/>
+                    </div>
+                    <a href="#" id="get-employee-details" class="btn btn-primary"><span class="glyphicon glyphicon-user"></span>Get Users</a>
+                </form>
+                
+            </div>
+        </div>
+    </div>
+
+<script>
+    $(document).ready(function () {
+        $employeeId = $("#employee-id");
+        $employeeDetailsBtn = $("#get-employee-details");
+        $employeeDetailsTable = $("#employee-details-table");
+        $employeeDetailsBtn.on("click", function (e) {
+            e.preventDefault();
+            var employeeId = $employeeId.val();
+
+            if (isNaN(employeeId) || !Number.isInteger(+employeeId)) {
+                alert("Please only enter integers on this field");
+                $employeeId.val('');
+                return;
+            }
+
+            var url = "/api/Employees/";
+
+            if (employeeId) {
+                url += employeeId;
+            }
+
+            $.ajax({
+                url: url,
+                dataType: "JSON",
+                method: "GET",
+                success: function (response) {
+                    var data = JSON.parse(response);
+                    console.log(data);
+                    $employeeDetailsTable.DataTable({
+                        destroy: true,
+                        data: data,
+                        columns: [
+                            { data: "Id" },
+                            { data: "Name" },
+                            { data: "RoleName" },
+                            { data: "RoleDescription" },
+                            { data: "ContractType" },
+                            { data: "AnnualSalary", render: $.fn.dataTable.render.number(',', '.', 2, '$') }
+                        ],
+                        searching: false,
+                        ordering: false,
+                        paging: false
+                    });
+                }
+            });
+
+            
+        });
+    });
+</script>
